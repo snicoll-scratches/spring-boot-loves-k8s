@@ -22,6 +22,7 @@
 
 	<modules>
 		<module>hello-app</module>
+		<module>hello-backend</module>
 		<module>hello-service</module>
 	</modules>
 
