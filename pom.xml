@@ -9,7 +9,7 @@
 		<version>2.3.2.RELEASE</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>com.example.k8s</groupId>
+	<groupId>io.spring.sample</groupId>
 	<artifactId>spring-boot-loves-k8s</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>pom</packaging>
@@ -21,20 +21,8 @@
 	</properties>
 
 	<modules>
-		<module>hello-app</module>
-		<module>hello-backend</module>
-		<module>hello-service</module>
+		<module>scribe</module>
+		<module>markdown-converter</module>
 	</modules>
-
-	<dependencyManagement>
-		<dependencies>
-			<dependency>
-				<groupId>com.example.k8s</groupId>
-				<artifactId>hello-service</artifactId>
-				<version>0.0.1-SNAPSHOT</version>
-			</dependency>
-		</dependencies>
-	</dependencyManagement>
-
 
 </project>
