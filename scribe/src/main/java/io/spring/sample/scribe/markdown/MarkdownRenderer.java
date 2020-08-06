@@ -1,13 +1,14 @@
 package io.spring.sample.scribe.markdown;
 
 import java.net.URI;
+import java.util.function.Supplier;
 
+import io.github.resilience4j.circuitbreaker.CircuitBreaker;
+import io.vavr.control.Try;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.springframework.boot.web.client.RestTemplateBuilder;
-import org.springframework.cloud.client.circuitbreaker.CircuitBreaker;
-import org.springframework.cloud.client.circuitbreaker.CircuitBreakerFactory;
 import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
 import org.springframework.stereotype.Component;
@@ -22,9 +23,9 @@ public class MarkdownRenderer {
 
 	private final CircuitBreaker circuitBreaker;
 
-	public MarkdownRenderer(RestTemplateBuilder builder, CircuitBreakerFactory circuitBreakerFactory) {
+	public MarkdownRenderer(RestTemplateBuilder builder) {
 		this.restTemplate = builder.build();
-		this.circuitBreaker = circuitBreakerFactory.create("markdown");
+		this.circuitBreaker = CircuitBreaker.ofDefaults("markdown");
 	}
 
 	public String renderToHtml(String markup) {
@@ -32,11 +33,12 @@ public class MarkdownRenderer {
 		RequestEntity<String> request = RequestEntity.post(uri)
 				.contentType(MediaType.TEXT_MARKDOWN)
 				.body(markup);
-		return this.circuitBreaker.run(
-				() -> this.restTemplate.exchange(request, String.class).getBody(),
+		Supplier<String> supplier = this.circuitBreaker.decorateSupplier(
+				() -> this.restTemplate.exchange(request, String.class).getBody());
+		return Try.ofSupplier(supplier).recover(
 				(exception) -> {
 					logger.warn("Error while calling markdown converter service", exception);
 					return "<p>Could not render markup.</p>";
-				});
+				}).get();
 	}
 }

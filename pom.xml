@@ -25,4 +25,24 @@
 		<module>markdown-converter</module>
 	</modules>
 
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>io.github.resilience4j</groupId>
+				<artifactId>resilience4j-circuitbreaker</artifactId>
+				<version>1.5.0</version>
+			</dependency>
+			<dependency>
+				<groupId>org.pegdown</groupId>
+				<artifactId>pegdown</artifactId>
+				<version>1.6.0</version>
+			</dependency>
+			<dependency>
+				<groupId>org.webjars.npm</groupId>
+				<artifactId>bulma</artifactId>
+				<version>0.9.0</version>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+
 </project>
