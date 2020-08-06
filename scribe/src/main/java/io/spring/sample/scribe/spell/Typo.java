@@ -7,7 +7,7 @@ public class Typo {
 
 	private final String original;
 
-	private List<String> suggestions = new ArrayList<>();
+	private final List<String> suggestions = new ArrayList<>();
 
 	public Typo(String original) {
 		this.original = original;

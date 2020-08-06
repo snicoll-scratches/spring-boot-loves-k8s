@@ -5,11 +5,7 @@ import org.springframework.boot.actuate.health.Health;
 import org.springframework.stereotype.Component;
 
 @Component
-public class MarkdownRendererHealthIndicator extends AbstractHealthIndicator {
-
-	private final String TEST_MARKUP = "This is a *test*.";
-
-	private final String EXPECTED_HTML = "<p>This is a <em>test</em>.</p>";
+class MarkdownRendererHealthIndicator extends AbstractHealthIndicator {
 
 	private final MarkdownRenderer markdownRenderer;
 
@@ -18,13 +14,14 @@ public class MarkdownRendererHealthIndicator extends AbstractHealthIndicator {
 	}
 
 	@Override
-	protected void doHealthCheck(Health.Builder builder) throws Exception {
-		String result = this.markdownRenderer.renderToHtml(TEST_MARKUP);
-		if (EXPECTED_HTML.equals(result)) {
+	protected void doHealthCheck(Health.Builder builder) {
+		String result = this.markdownRenderer.renderToHtml("This is a *test*.");
+		if ("<p>This is a <em>test</em>.</p>".equals(result)) {
 			builder.up();
 		}
 		else {
 			builder.outOfService().withDetail("result", result);
 		}
 	}
+
 }
