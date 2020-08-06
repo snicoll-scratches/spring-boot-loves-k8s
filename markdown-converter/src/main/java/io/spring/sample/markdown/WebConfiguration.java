@@ -1,4 +1,4 @@
-package io.spring.sample.scribe;
+package io.spring.sample.markdown;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -10,8 +10,8 @@ import org.springframework.web.servlet.function.ServerResponse;
 import static org.springframework.web.servlet.function.RequestPredicates.accept;
 import static org.springframework.web.servlet.function.RequestPredicates.contentType;
 
-@Configuration
-public class WebConfig {
+@Configuration(proxyBeanMethods = false)
+class WebConfiguration {
 
 	@Bean
 	public RouterFunction<ServerResponse> routerFunction(MarkdownHandler markdownHandler) {

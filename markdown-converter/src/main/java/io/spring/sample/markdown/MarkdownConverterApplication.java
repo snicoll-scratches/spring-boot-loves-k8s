@@ -1,4 +1,4 @@
-package io.spring.sample.scribe;
+package io.spring.sample.markdown;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

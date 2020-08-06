@@ -1,12 +1,12 @@
-package io.spring.sample.scribe;
+package io.spring.sample.markdown;
 
 import org.pegdown.Extensions;
 import org.pegdown.PegDownProcessor;
 
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
-@Service
-public class PegdownConverter {
+@Component
+class PegdownConverter {
 
 	private final PegDownProcessor pegdown;
 

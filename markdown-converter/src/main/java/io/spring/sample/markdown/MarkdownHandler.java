@@ -1,4 +1,4 @@
-package io.spring.sample.scribe;
+package io.spring.sample.markdown;
 
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
@@ -6,7 +6,7 @@ import org.springframework.web.servlet.function.ServerRequest;
 import org.springframework.web.servlet.function.ServerResponse;
 
 @Component
-public class MarkdownHandler {
+class MarkdownHandler {
 
 	private final PegdownConverter converter;
 
