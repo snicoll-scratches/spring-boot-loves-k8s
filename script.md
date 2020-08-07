@@ -4,8 +4,9 @@
 * Make sure that no image named `scribe` or `scribe-custom` exist in the local registry (run `docker images scribe` and `docker images scribe-custom` to confirm)
 * This script assumes that this project uses Java 1.8. Make sure that the project is built.
 
+# Docker vs. Cloud Native Buildpacks
 
-# Basic Docker image
+## Basic Docker image
 There's a number of tutorials and blog posts about embedding a Spring Boot app in a container.
 Our initial `Dockerfile` is very simple and not optimized:
 
@@ -65,7 +66,7 @@ ENTRYPOINT ["java","-cp","app:app/lib/*","io.spring.sample.scribe.ScribeApplicat
 
 It is better, but the libraries are still on a single layer.
 
-# Application layers 
+## Application layers 
 Spring Boot 2.3 provides a way to split the application in more fine-grained layers.
 
 ```
@@ -123,7 +124,7 @@ As of Spring Boot 2.3, `JarLauncher` can run on an exploded jar.
 This is an improvement over specifying the classpath and the fully qualified name of the app.
 
 
-# Customize layers
+## Customize layers
 Spring Boot 2.3 allows you to define the layers of your application in a more fine-grained manner.
 For the sake of the example, let's separate the webjars of our application in a separate layer as they change more often than other dependencies.
 We don't use snapshots at the moment, so we can remove that dedicated layer.
@@ -187,11 +188,12 @@ If we forget to do that, we'll have an exception as the `snapshot-dependencies` 
 If we `dive` in our container, we can see an additional layer with only our webjars.
 
 
-# What about jib?
+## What about jib?
 
 TODO
 
-# Spring Boot 2.3 support
+
+## Spring Boot 2.3 support
 Spring Boot 2.3 includes support for Cloud Native Buildpacks, allowing you to build an image directly from your build.
 Let's first remove our custom `Dockerfile` to strengthen that it is no longer in the picture.
 
@@ -224,7 +226,7 @@ Besides that, a number of layers have been contributed based on the nature of th
 In particular, the buildpack has detected the jar is a Spring Boot application and a number of Spring Boot specific tasks were performed to optimize the environment in which this app runs.
 
 
-# Tune Java version
+## Tune Java version
 Each buildpack exposes a number of properties to enable opt-in behaviour or to tune how the image is 
 In the root pom, change `<java.version>` from `1.8` to `11`, we can invoke the `build-image` command again and we can see that JRE 11 is now bundled with the image and that other layers are reused (except the security providers that are based on the JDK).
 
@@ -232,7 +234,7 @@ This happens as the build plugins detect this specific property and auto-configu
 
 The property to use to customize the Java version is `BP_JVM_VERSION`.
 
-# Going further
+## Going further
 There are many other ways to tune how your image is built.
 You could create your own builder, reusing a number of existing buildpacks.
 You could also deploy your jar file as is and let a separate process create and publish your images (see `kpack).
