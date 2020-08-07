@@ -16,6 +16,9 @@ class MarkdownHandler {
 
 	public ServerResponse convert(ServerRequest request) throws Exception {
 		String markup = request.body(String.class);
+		if (markup.contains("delay")) {
+			Thread.sleep(8000);
+		}
 		return ServerResponse.ok().contentType(MediaType.TEXT_HTML).body(converter.convert(markup));
 	}
 }
