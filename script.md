@@ -1,8 +1,8 @@
 # Before we start
 
-* Make sure that the docker daemon is up and running
-* Make sure that no image named `scribe` or `scribe-custom` exist in the local registry (run `docker images scribe` and `docker images scribe-custom` to confirm)
-* This script assumes that this project uses Java 1.8. Make sure that the project is built.
+* Make sure the docker daemon is up and running
+* Make sure no image named `scribe` or `scribe-custom` exist in the local registry (run `docker images scribe` and `docker images scribe-custom` to confirm)
+* This script assumes that this project uses Java 1.8. Make sure the project has been built.
 
 # Docker vs. Cloud Native Buildpacks
 
@@ -18,7 +18,7 @@ COPY ${JAR_FILE} application.jar
 ENTRYPOINT ["java","-jar","application.jar"]
 ```
 
-If we haven't build this image yet, let's build it:
+If we haven't built this image yet, let's build it:
 
 ```shell script
 docker build -t scribe-custom:0.0.1-SNAPSHOT .
@@ -121,7 +121,7 @@ dive scribe-custom:0.0.1-SNAPSHOT
 Our application does not use any snapshot but if we did, regular dependencies and snapshot dependencies would have been separated each in their respective layer.
 The `spring-boot-loader` that Spring Boot uses to bootstrap an application using `java -jar` is easier to put in the image now it is extracted as a dedicated layer.
 As of Spring Boot 2.3, `JarLauncher` can run on an exploded jar.
-This is an improvement over specifying the classpath and the fully qualified name of the app.
+This is an improvement over specifying the classpath, and the fully qualified name of the app.
 
 
 ## Customize layers
