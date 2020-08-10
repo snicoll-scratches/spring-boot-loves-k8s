@@ -239,3 +239,76 @@ There are many other ways to tune how your image is built.
 You could create your own builder, reusing a number of existing buildpacks.
 You could also deploy your jar file as is and let a separate process create and publish your images (see `kpack).
 This lets you manage your image consistently and can be useful if you need to rebase all your applications following a CVE.
+
+
+# Cloud deployment
+
+## K8s, but not only
+We want to enforce best practices without a hard dependency on kubernetes.
+We'll keep running the app locally to showcase how those can be used in other environments.
+When running in Kubernetes, some behaviour that we'll opt-in to are enabled automatically.
+
+
+## Liveness / Readiness
+The health endpoint can be used to automatically expose liveness and readiness endpoints.
+Let's add the following to `application.properties`:
+
+```properties 
+management.endpoint.health.probes.enabled=true
+```
+
+When the application run on Kubernetes, the property above isn't necessary as those are exposed automatically.
+
+
+## PostConstruct vs. Application runner
+We need to build a cache on startup and that might take a while, see `io.spring.sample.scribe.spell.DictionaryLoader`.
+
+This can be a problem if the orchestration layer decides that the application takes too much time to start.
+Using `/actuator/health/liveness` will declare the application live as fast as possible.
+`ApplicationRunner` callbacks won't have been invoked yet.
+That doesn't mean that the application is ready to receive traffic though, `/actuator/health/readiness` is used for that and will wait for those runners to be invoked.
+
+We are loading our cache in an `ApplicationRunner` callback.
+Doing so in `@PostConstruct` or `afterPropertiesSet` is not recommended for the reason above.
+
+Let's demonstrate that by adding a delay when loading the dictionary:
+
+Let's add a `Thread.sleep(10)` in `io.spring.sample.scribe.spell.DictionaryLoader` and use two pinned run action on the liveness and readiness endpoints. 
+We can see the application is live quite quickly but `OUT_OF_SERVICE` on the readiness endpoint while the cache is being loaded.
+
+
+## Health indicators vs. Readiness
+Let's shutdown our `markdown-converter`.
+If we submit our form again, we can see that it's not rendered anymore but it doesn't crash as we have a circuit breaker for the call.
+While `/actuator/health` shows that the application is `out-of-service`, the readiness state is still `up`.
+
+Using this technique, we can avoid shutting down applications unnecessary when one component is not available. 
+
+
+## Application Availability
+Spring Boot 2.3 introduces the notion of "Application availability".
+In particular, developers can declare the current application is broken and has to restart.
+
+Our `SpellChecker` has a special case. If we write `broken` anywhere, it will declare the application as broken:
+
+```java 
+Typo checkWord(String word) {
+    if ("broken".equals(word)) {
+        AvailabilityChangeEvent.publish(this.eventPublisher, this, LivenessState.BROKEN);
+        return null;
+    }
+    ...
+}	
+```
+
+ 
+## Graceful shutdown
+Spring Boot 2.3 introduces a [graceful shutdown](https://docs.spring.io/spring-boot/docs/current/reference/html/spring-boot-features.html#boot-features-graceful-shutdown) feature that provides a grace period for existing request when application shutdown is initiated.
+
+We can demonstrate that feature with another twist in our render: it takes more time if we write "delay" in the text.
+
+* Write `delay` and shutdown the renderer, we can see the circuit breaker was invoked as the request to the backend failed.
+* Add `server.shutdown=graceful` to the configuration and the renderer and try again. The sentence is rendered properly.
+
+On Kubernetes, when the application is shutting down, some asynchronous process may not have completed and traffic might still be routed to the application.
+To avoid that, it is recommended to setup a `preStop` hook that wait a bit before invoking the shutdown.
