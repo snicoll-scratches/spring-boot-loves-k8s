@@ -11,10 +11,6 @@
 	<artifactId>scribe</artifactId>
 	<name>Scribe Application</name>
 
-	<properties>
-		<spring-cloud.version>Hoxton.SR6</spring-cloud.version>
-	</properties>
-
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
