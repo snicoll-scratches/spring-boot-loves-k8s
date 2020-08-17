@@ -16,14 +16,28 @@
 
 package io.spring.sample.scribe;
 
+import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Bean;
+import org.springframework.core.env.Environment;
 
 @SpringBootApplication
 public class ScribeApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(ScribeApplication.class, args);
+	}
+
+	@Bean
+	public ApplicationRunner osLogger(Environment environment) {
+		return (arguments) -> {
+			System.out.printf("======%n");
+			System.out.printf("Running on %s %s (%s)%n", environment.getProperty("os.name"),
+					environment.getProperty("os.version"), environment.getProperty("os.arch"));
+			System.out.printf("TEST_CUSTOM_PROPERTY is %s%n", environment.getProperty("TEST_CUSTOM_PROPERTY"));
+			System.out.printf("======%n");
+		};
 	}
 
 }
