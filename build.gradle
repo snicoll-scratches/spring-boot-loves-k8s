@@ -14,9 +14,7 @@ plugins {
 
 subprojects {
 	group 'io.spring.sample'
-	version = '0.0.1-SNAPSHOT'
 
-	apply plugin: 'checkstyle'
 	apply plugin: 'java'
 	apply plugin: 'io.spring.dependency-management'
 	apply plugin: 'io.spring.javaformat'
@@ -30,14 +28,7 @@ subprojects {
 		targetCompatibility = 1.8
 	}
 
-	dependencies {
-		checkstyle "io.spring.javaformat:spring-javaformat-checkstyle:$javaFormatVersion"
-	}
-
 	dependencyManagement {
-		imports {
-			mavenBom("org.springframework.boot:spring-boot-dependencies:2.3.2.RELEASE")
-		}
 		dependencies {
 			dependency 'io.github.resilience4j:resilience4j-circuitbreaker:1.5.0'
 			dependency 'org.pegdown:pegdown:1.6.0'
