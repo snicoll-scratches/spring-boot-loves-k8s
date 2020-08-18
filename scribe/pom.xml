@@ -56,6 +56,7 @@
 				<configuration>
 					<layers>
 						<enabled>true</enabled>
+						<configuration>${project.basedir}/src/main/layers.xml</configuration>
 					</layers>
 				</configuration>
 			</plugin>
